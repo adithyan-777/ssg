@@ -1,7 +1,7 @@
-
 import unittest
 
 from htmlnode import HTMLNode, LeafNode, ParentNode
+
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -17,11 +17,11 @@ class TestTextNode(unittest.TestCase):
         node1 = HTMLNode("H", "HomePage")
         node2 = HTMLNode("a", "google.com", props={"href": "https://www.google.com"})
         self.assertNotEqual(node1.props_to_html(), node2.props_to_html())
-    
+
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
-    
+
     def test_leaf_to_html_a(self):
         node = LeafNode("a", "Google", {"href": "https://www.google.com"})
         self.assertEqual(node.to_html(), '<a href="https://www.google.com">Google</a>')
@@ -42,8 +42,8 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(
             parent_node.to_html(),
             "<div><span><b>grandchild</b></span></div>",
-    )
-    
+        )
+
     def test_to_html_many_children(self):
         node = ParentNode(
             "p",
@@ -77,5 +77,3 @@ class TestTextNode(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
