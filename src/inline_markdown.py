@@ -1,5 +1,17 @@
+import re
 from textnode import TextNode, TextType
-from extract_utils import extract_markdown_images, extract_markdown_links
+
+
+def text_to_text_nodes(text):
+    newtext = TextNode(text, TextType.TEXT)
+
+    nodes = split_nodes_delimiter(old_nodes=[newtext], delimiter="**", text_type=TextType.BOLD)
+    nodes = split_nodes_delimiter(old_nodes=nodes, delimiter="_", text_type=TextType.ITALIC)
+    nodes = split_nodes_delimiter(old_nodes=nodes, delimiter="`", text_type=TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+
+    return nodes
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -61,13 +73,17 @@ def split_nodes_link(old_nodes):
 
     return new_nodes
 
-def text_to_text_nodes(text):
-    newtext = TextNode(text, TextType.TEXT)
 
-    nodes = split_nodes_delimiter(old_nodes=[newtext], delimiter="**", text_type=TextType.BOLD)
-    nodes = split_nodes_delimiter(old_nodes=nodes, delimiter="_", text_type=TextType.ITALIC)
-    nodes = split_nodes_delimiter(old_nodes=nodes, delimiter="`", text_type=TextType.CODE)
-    nodes = split_nodes_image(nodes)
-    nodes = split_nodes_link(nodes)
+def extract_markdown_images(text: str):
+    if text:
+        matchs = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+        return matchs
+    else:
+        raise Exception("Invalid text!")
 
-    return nodes
+def extract_markdown_links(text: str):
+    if text:
+        matchs = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+        return matchs
+    else:
+        raise Exception("Invalid text!")
