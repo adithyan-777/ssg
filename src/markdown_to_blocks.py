@@ -15,39 +15,27 @@ def markdown_to_blocks(markdown: str):
     return cleaned_blocks
 
 def block_to_block_type(block: str):
-    if block.startswith("#"):
+    lines = block.split("\n")
+    if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
         return BlockType.HEADING
-    elif block.startswith("```") and block.endswith("```"):
+    elif len(lines) > 1 and block.startswith("```") and block.endswith("```"):
         return BlockType.CODE
     elif block.startswith(">"):
-        is_quote_block = True
-        for line in block.split("\n"):
-            if not line.startswith(">"):
-                is_quote_block = False
-        return BlockType.QUOTE if is_quote_block else None
+        for line in lines:
+            if not line.startswith("- "):
+                return BlockType.PARAGRAPH
+        return BlockType.QUOTE
     elif block.startswith("-"):
-        is_unordered_block = True
-        for line in block.split("\n"):
-            if not line.startswith("-"):
-                is_unordered_block = False
-        return BlockType.UNORDERED_LIST if is_unordered_block else None
-    elif "." in block:
-        parts = block.split(".", 1)
-        if len(parts) >= 2:
-            number_part = parts[0]
-            current_order = 0
-            if number_part.isdigit():
-                order_list_flag = True
-                for line in block.split("\n"):
-                    line_part = line.split(".", 1)
-                    if len(line_part) >= 2:
-                        line_numderpart = line_part[0].strip()
-                        order_numder = int(line_numderpart) if line_numderpart.isdigit() else None
-                        if not order_numder or current_order+1 != order_numder:
-                            order_list_flag = False
-                        current_order = order_numder
-        return BlockType.ORDERED_LIST if order_list_flag else None
-    else:
+        for line in lines:
+            if not line.startswith("- "):
+                return BlockType.PARAGRAPH
+        return BlockType.UNORDERED_LIST
+    if block.startswith("1. "):
+        i = 1
+        for line in lines:
+            if not line.startswith(f"{i}. "):
+                return BlockType.PARAGRAPH
+            i += 1
+            return BlockType.ORDERED_LIST
         return BlockType.PARAGRAPH
-
 
